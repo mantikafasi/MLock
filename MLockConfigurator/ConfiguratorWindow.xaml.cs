@@ -41,7 +41,6 @@ namespace MLockUSBKeyGenerator
         {
             var keys= RSAUtils.GenerateKeyPairs();
             File.WriteAllText("privateKey.xml", keys.Item1);
-            File.WriteAllText("publicKey.xml", keys.Item2);
             //get current path
 
             PrivateKeyPathBox.Text = Directory.GetCurrentDirectory() + "\\privateKey.xml";
@@ -102,6 +101,11 @@ namespace MLockUSBKeyGenerator
         public void InstallConfigButton_Click(object sender,RoutedEventArgs e)
         {
             if (ValidateConfig()) {
+
+                if (!Directory.Exists(MLOCK_DIR))
+                {
+                    Directory.CreateDirectory(MLOCK_DIR);
+                }
 
                 var jsonString = JsonSerializer.Serialize(config);
                 File.WriteAllText(MLOCK_DIR + "\\config.json", jsonString);

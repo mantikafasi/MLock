@@ -7,7 +7,7 @@ namespace MLock
     {
         public static Config INSTANCE;
 
-        [JsonIgnore] public string publicKey = File.ReadAllText(App.MLOCK_DIR + "\\publicKey.xml");
+        [JsonIgnore] public string publicKey;
 
         [JsonPropertyName("password")] public string Password { get; set; }
 

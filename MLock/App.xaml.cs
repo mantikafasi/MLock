@@ -51,11 +51,17 @@ namespace MLock
                 return false;
             }
 
-            if (Config.INSTANCE.EnableUSBUnlocking && !File.Exists(MLOCK_DIR + "\\publicKey.xml"))
+            if (Config.INSTANCE.EnableUSBUnlocking)
             {
-                System.Windows.MessageBox.Show(
-                    "Public Key for USB Locking not found, please run the USB key generator and config installer first");
-                return false;
+                if (!File.Exists(MLOCK_DIR + "\\publicKey.xml"))
+                {
+                    System.Windows.MessageBox.Show(
+                        "Public Key for USB Locking not found, please run the USB key generator and config installer first");
+                    return false;
+                }
+
+                Config.INSTANCE.publicKey = File.ReadAllText(App.MLOCK_DIR + "\\publicKey.xml");
+
             }
 
             if (Config.INSTANCE.EnablePasswordUnlocking &&
