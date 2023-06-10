@@ -1,16 +1,14 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using System.Management;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
+using System.Windows.Media;
 
 namespace MLock
 {
     public partial class MainWindow
     {
-        Native.KHConfig config;
+        private readonly Native.KHConfig config;
 
         public MainWindow()
         {
@@ -21,13 +19,13 @@ namespace MLock
                 Console.WriteLine("Password correct!");
                 Dispatcher.Invoke(() =>
                 {
-                    Background = System.Windows.Media.Brushes.LightGreen;
+                    Background = Brushes.LightGreen;
                     new Thread(() =>
                     {
                         Thread.Sleep(500);
                         Dispatcher.Invoke(() =>
                         {
-                            Background = System.Windows.Media.Brushes.White;
+                            Background = Brushes.White;
                             Native.UninstallKHook();
                             Native.RestoreTskMan();
                             Hide();
@@ -41,7 +39,7 @@ namespace MLock
                 Dispatcher.Invoke(() =>
                 {
                     PasswordBlock.Text = "Enter Password";
-                    
+
                     if (!Native.DisableTskMan())
                     {
                         MessageBox.Show("Failed to disable task manager,be sure MLock has administrator permissions");
@@ -53,50 +51,41 @@ namespace MLock
                 });
             };
 
-            config = new Native.KHConfig() {
+            config = new Native.KHConfig
+            {
                 ClearCountsAsFail = false,
                 RequireEnter = false,
                 Pw = Config.INSTANCE.Password,
                 PwLength = Config.INSTANCE.Password.Length,
-                OnFail = (pw) =>
+                OnFail = pw =>
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        Background = System.Windows.Media.Brushes.Red;
+                        Background = Brushes.Red;
                         new Thread(() =>
                         {
                             Thread.Sleep(500);
-                            Dispatcher.Invoke(() =>
-                            {
-                                Background = System.Windows.Media.Brushes.White;
-                            });
+                            Dispatcher.Invoke(() => { Background = Brushes.White; });
                         }).Start();
                     });
                 },
-                OnSuccess = () =>
+                OnSuccess = () => { Events.Unlock(); },
+                OnInput = (input, len, fullInp) =>
                 {
-                    Events.Unlock();
-                },
-                OnInput = (input,len,fullInp) => {
-
                     if (fullInp.Length == 0)
                     {
                         PasswordBlock.Text = "Enter Password";
                         return;
                     }
-                    
-                    PasswordBlock.Text = String.Concat(Enumerable.Repeat("*", fullInp.Length));
+
+                    PasswordBlock.Text = string.Concat(Enumerable.Repeat("*", fullInp.Length));
                     // todo: maybe use Binding instead of this
-                },
-                
+                }
             };
 
             Native.SetKHookConfig(config);
 
-            if (Config.INSTANCE.StartLocked)
-            {
-                Events.Lock();
-            }
+            if (Config.INSTANCE.StartLocked) Events.Lock();
 
             if (Config.INSTANCE.EnableUSBUnlocking)
             {
@@ -104,9 +93,6 @@ namespace MLock
 
                 USB.CheckUSBs();
             }
-
         }
-
-
     }
 }

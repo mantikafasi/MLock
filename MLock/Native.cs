@@ -24,7 +24,6 @@ namespace MLock
         [DllImport("libs/vlock.dll")]
         public static extern bool RestoreTskMan();
 
-
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         public struct KHConfig
         {
