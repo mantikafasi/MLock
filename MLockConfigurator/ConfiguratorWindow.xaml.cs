@@ -35,6 +35,11 @@ namespace MLockUSBKeyGenerator
                 }
             }
 
+            if (Utils.IsTaskInstalled())
+            {
+                InstallTaskButton.Content = "Uninstall Task";
+            }
+
         }
 
         public void GenerateButton_Click(object sender, RoutedEventArgs e)
@@ -125,7 +130,7 @@ namespace MLockUSBKeyGenerator
             {
                 if (!File.Exists(PrivateKeyPathBox.Text))
                 {
-                    MessageBox.Show("Public Key for USB Locking not found, please select the existent one or generate");
+                    MessageBox.Show("Private Key for USB Locking not found, please select the existent one or generate");
                     return false;
 
                 }
@@ -154,8 +159,21 @@ namespace MLockUSBKeyGenerator
                 return false;
             }
 
-
             return true;
+        }
+
+        private void InstallTaskButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (Utils.IsTaskInstalled())
+            {
+                Utils.UninstallTask();
+            }
+            else
+            {
+                Utils.InstallTask();
+            }
+
+            InstallTaskButton.Content = Utils.IsTaskInstalled() ? "Uninstall startup Task" : "Install startup Task";
         }
     }
 

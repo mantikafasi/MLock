@@ -40,10 +40,16 @@
         </StackPanel>
 
         <TextBlock Text="USB key is going to be installed to:" Margin="10" />
-        <ComboBox x:Name="USBComboBox" Margin="10" HorizontalAlignment="Left" Width="{Binding ElementName=PasswordTextBox, Path=ActualWidth}" IsEnabled="{Binding EnableUSBUnlocking}"/>
-        <Button x:Name="InstallButton" Content="Generate USB Key" Click="GenerateKey_Click" Width="120" Height="30" Margin="10,0,10,0" HorizontalAlignment="Right" IsEnabled="{Binding EnableUSBUnlocking}"/>
+        <StackPanel Orientation="Horizontal">
+            <ComboBox x:Name="USBComboBox" Margin="10" HorizontalAlignment="Left" Width="{Binding ElementName=PasswordTextBox, Path=ActualWidth}" IsEnabled="{Binding EnableUSBUnlocking}"/>
+            <Button x:Name="InstallButton" Content="Generate USB Key" Click="GenerateKey_Click" Width="120" Height="30" Margin="10,0,0,0" HorizontalAlignment="Right" IsEnabled="{Binding EnableUSBUnlocking}"/>
 
-        <Button x:Name="InstallConfigButton" Content="Install MLock Config" Click="InstallConfigButton_Click" Width="120" Height="30" Margin="10,10,10,0" HorizontalAlignment="Right"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal"  Margin="10,10,10,0" HorizontalAlignment="Center">
+            <Button Name="InstallTaskButton" Click="InstallTaskButton_OnClick" Content="Install startup task" Width="120" Height="30" Margin="10,10,0,0"></Button>
+            <Button x:Name="InstallConfigButton" Content="Install MLock Config" Click="InstallConfigButton_Click" Width="120" Height="30" Margin="10,10,0,0" HorizontalAlignment="Right"/>
+        </StackPanel>
     </StackPanel>
 
 

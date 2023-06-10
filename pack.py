@@ -4,6 +4,7 @@ import zipfile
 def add_files_to_zip(zip_file, source_dir, added_files):
     for root, _, files in os.walk(source_dir):
         for file in files:
+            if file == "Microsoft.Win32.TaskScheduler.resources.dll": continue # stupit tasks library loves creating these
             file_path = os.path.join(root, file)
             if file not in added_files:
                 zip_file.write(file_path, os.path.relpath(file_path, source_dir))
