@@ -1,9 +1,8 @@
-﻿using MLock;
-using System;
+﻿using System;
 using System.IO;
 using System.Security.Cryptography;
-using System.Text.Json;
 using System.Windows;
+using MLockConfigurator;
 
 namespace MLockUSBKeyGenerator
 {
@@ -20,8 +19,8 @@ namespace MLockUSBKeyGenerator
             if (File.Exists(MLOCK_DIR + "\\config.json"))
             {
                 var jsonString = File.ReadAllText(MLOCK_DIR + "\\config.json");
-
-                config = JsonSerializer.Deserialize<Config>(jsonString);
+                
+                config = jsonString.FromJson<Config>();
             }
 
             DataContext = config;
@@ -112,8 +111,7 @@ namespace MLockUSBKeyGenerator
                     Directory.CreateDirectory(MLOCK_DIR);
                 }
 
-                var jsonString = JsonSerializer.Serialize(config);
-                File.WriteAllText(MLOCK_DIR + "\\config.json", jsonString);
+                File.WriteAllText(MLOCK_DIR + "\\config.json", config.ToJson());
 
                 if (config.EnableUSBUnlocking)
                 {

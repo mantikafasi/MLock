@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using System.Text.Json.Serialization;
+using System.Runtime.Serialization;
 
 namespace MLock
 {
@@ -7,16 +7,13 @@ namespace MLock
     {
         public static Config INSTANCE;
 
-        [JsonIgnore] public string publicKey;
+        [IgnoreDataMember] public string publicKey;
+        [DataMember(Name = "password")] public string Password { get; set; }
+        [DataMember(Name = "enableUSBUnlocking")] public bool EnableUSBUnlocking { get; set; }
 
-        [JsonPropertyName("password")] public string Password { get; set; }
-
-        [JsonPropertyName("enableUSBUnlocking")]
-        public bool EnableUSBUnlocking { get; set; }
-
-        [JsonPropertyName("enablePasswordUnlocking")]
+        [DataMember( Name= "enablePasswordUnlocking")]
         public bool EnablePasswordUnlocking { get; set; }
 
-        [JsonPropertyName("startLocked")] public bool StartLocked { get; set; }
+        [DataMember(Name= "startLocked")] public bool StartLocked { get; set; }
     }
 }

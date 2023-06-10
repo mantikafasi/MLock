@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.IO;
 using System.Reflection;
-using System.Text.Json;
 using System.Windows.Forms;
 
 namespace MLock
@@ -41,8 +40,7 @@ namespace MLock
             if (File.Exists(MLOCK_DIR + "\\config.json"))
             {
                 var jsonString = File.ReadAllText(MLOCK_DIR + "\\config.json");
-
-                var config = JsonSerializer.Deserialize<Config>(jsonString);
+                var config = jsonString.FromJson<Config>();
                 Config.INSTANCE = config;
             }
             else

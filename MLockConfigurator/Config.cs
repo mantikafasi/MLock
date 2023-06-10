@@ -1,25 +1,17 @@
-﻿using System.IO;
-using System.Text.Json.Serialization;
+﻿using System.Runtime.Serialization;
 
-namespace MLock
+namespace MLockConfigurator
 {
     public class Config
     {
+        public static Config INSTANCE;
 
-        [JsonPropertyName("password")]
-        public string Password { get; set; }
+        [IgnoreDataMember] public string privateKey;
+        [DataMember(Name = "password")] public string Password { get; set; }
+        [DataMember(Name = "enableUSBUnlocking")] public bool EnableUSBUnlocking { get; set; }
 
-        [JsonPropertyName("enableUSBUnlocking")]
-        public bool EnableUSBUnlocking { get; set; }
+        [DataMember( Name= "enablePasswordUnlocking")] public bool EnablePasswordUnlocking { get; set; }
 
-        [JsonPropertyName("enablePasswordUnlocking")]
-        public bool EnablePasswordUnlocking { get; set; }
-
-        [JsonPropertyName("startLocked")]
-        public bool StartLocked { get; set; }
-
-        [JsonIgnore]
-        public string privateKey;
-
+        [DataMember(Name= "startLocked")] public bool StartLocked { get; set; }
     }
 }
