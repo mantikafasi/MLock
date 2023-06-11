@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace MLockConfigurator
+namespace Common
 {
     //Really simple JSON writer
     //- Outputs JSON structures from an object
@@ -15,12 +16,12 @@ namespace MLockConfigurator
     {
         public static string ToJson(this object item)
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
             AppendValue(stringBuilder, item);
             return stringBuilder.ToString();
         }
 
-        static void AppendValue(StringBuilder stringBuilder, object item)
+        private static void AppendValue(StringBuilder stringBuilder, object item)
         {
             if (item == null)
             {
@@ -28,75 +29,78 @@ namespace MLockConfigurator
                 return;
             }
 
-            Type type = item.GetType();
+            var type = item.GetType();
             if (type == typeof(string) || type == typeof(char))
             {
                 stringBuilder.Append('"');
-                string str = item.ToString();
-                for (int i = 0; i < str.Length; ++i)
+                var str = item.ToString();
+                for (var i = 0; i < str.Length; ++i)
                     if (str[i] < ' ' || str[i] == '"' || str[i] == '\\')
                     {
                         stringBuilder.Append('\\');
-                        int j = "\"\\\n\r\t\b\f".IndexOf(str[i]);
+                        var j = "\"\\\n\r\t\b\f".IndexOf(str[i]);
                         if (j >= 0)
                             stringBuilder.Append("\"\\nrtbf"[j]);
                         else
-                            stringBuilder.AppendFormat("u{0:X4}", (UInt32)str[i]);
+                            stringBuilder.AppendFormat("u{0:X4}", (uint)str[i]);
                     }
                     else
+                    {
                         stringBuilder.Append(str[i]);
+                    }
+
                 stringBuilder.Append('"');
             }
             else if (type == typeof(byte) || type == typeof(sbyte))
             {
-                stringBuilder.Append(item.ToString());
+                stringBuilder.Append(item);
             }
             else if (type == typeof(short) || type == typeof(ushort))
             {
-                stringBuilder.Append(item.ToString());
+                stringBuilder.Append(item);
             }
             else if (type == typeof(int) || type == typeof(uint))
             {
-                stringBuilder.Append(item.ToString());
+                stringBuilder.Append(item);
             }
             else if (type == typeof(long) || type == typeof(ulong))
             {
-                stringBuilder.Append(item.ToString());
+                stringBuilder.Append(item);
             }
             else if (type == typeof(float))
             {
-                stringBuilder.Append(((float)item).ToString(System.Globalization.CultureInfo.InvariantCulture));
+                stringBuilder.Append(((float)item).ToString(CultureInfo.InvariantCulture));
             }
             else if (type == typeof(double))
             {
-                stringBuilder.Append(((double)item).ToString(System.Globalization.CultureInfo.InvariantCulture));
+                stringBuilder.Append(((double)item).ToString(CultureInfo.InvariantCulture));
             }
             else if (type == typeof(decimal))
             {
-                stringBuilder.Append(((decimal)item).ToString(System.Globalization.CultureInfo.InvariantCulture));
+                stringBuilder.Append(((decimal)item).ToString(CultureInfo.InvariantCulture));
             }
             else if (type == typeof(bool))
             {
-                stringBuilder.Append(((bool)item) ? "true" : "false");
+                stringBuilder.Append((bool)item ? "true" : "false");
             }
             else if (type == typeof(DateTime))
             {
                 stringBuilder.Append('"');
-                stringBuilder.Append(((DateTime)item).ToString(System.Globalization.CultureInfo.InvariantCulture));
+                stringBuilder.Append(((DateTime)item).ToString(CultureInfo.InvariantCulture));
                 stringBuilder.Append('"');
             }
             else if (type.IsEnum)
             {
                 stringBuilder.Append('"');
-                stringBuilder.Append(item.ToString());
+                stringBuilder.Append(item);
                 stringBuilder.Append('"');
             }
             else if (item is IList)
             {
                 stringBuilder.Append('[');
-                bool isFirst = true;
-                IList list = item as IList;
-                for (int i = 0; i < list.Count; i++)
+                var isFirst = true;
+                var list = item as IList;
+                for (var i = 0; i < list.Count; i++)
                 {
                     if (isFirst)
                         isFirst = false;
@@ -104,11 +108,12 @@ namespace MLockConfigurator
                         stringBuilder.Append(',');
                     AppendValue(stringBuilder, list[i]);
                 }
+
                 stringBuilder.Append(']');
             }
             else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
             {
-                Type keyType = type.GetGenericArguments()[0];
+                var keyType = type.GetGenericArguments()[0];
 
                 //Refuse to output dictionary keys that aren't of type string
                 if (keyType != typeof(string))
@@ -118,9 +123,9 @@ namespace MLockConfigurator
                 }
 
                 stringBuilder.Append('{');
-                IDictionary dict = item as IDictionary;
-                bool isFirst = true;
-                foreach (object key in dict.Keys)
+                var dict = item as IDictionary;
+                var isFirst = true;
+                foreach (var key in dict.Keys)
                 {
                     if (isFirst)
                         isFirst = false;
@@ -131,20 +136,22 @@ namespace MLockConfigurator
                     stringBuilder.Append("\":");
                     AppendValue(stringBuilder, dict[key]);
                 }
+
                 stringBuilder.Append('}');
             }
             else
             {
                 stringBuilder.Append('{');
 
-                bool isFirst = true;
-                FieldInfo[] fieldInfos = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-                for (int i = 0; i < fieldInfos.Length; i++)
+                var isFirst = true;
+                var fieldInfos =
+                    type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+                for (var i = 0; i < fieldInfos.Length; i++)
                 {
                     if (fieldInfos[i].IsDefined(typeof(IgnoreDataMemberAttribute), true))
                         continue;
 
-                    object value = fieldInfos[i].GetValue(item);
+                    var value = fieldInfos[i].GetValue(item);
                     if (value != null)
                     {
                         if (isFirst)
@@ -157,13 +164,15 @@ namespace MLockConfigurator
                         AppendValue(stringBuilder, value);
                     }
                 }
-                PropertyInfo[] propertyInfo = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-                for (int i = 0; i < propertyInfo.Length; i++)
+
+                var propertyInfo =
+                    type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+                for (var i = 0; i < propertyInfo.Length; i++)
                 {
                     if (!propertyInfo[i].CanRead || propertyInfo[i].IsDefined(typeof(IgnoreDataMemberAttribute), true))
                         continue;
 
-                    object value = propertyInfo[i].GetValue(item, null);
+                    var value = propertyInfo[i].GetValue(item, null);
                     if (value != null)
                     {
                         if (isFirst)
@@ -181,11 +190,12 @@ namespace MLockConfigurator
             }
         }
 
-        static string GetMemberName(MemberInfo member)
+        private static string GetMemberName(MemberInfo member)
         {
             if (member.IsDefined(typeof(DataMemberAttribute), true))
             {
-                DataMemberAttribute dataMemberAttribute = (DataMemberAttribute)Attribute.GetCustomAttribute(member, typeof(DataMemberAttribute), true);
+                var dataMemberAttribute =
+                    (DataMemberAttribute)Attribute.GetCustomAttribute(member, typeof(DataMemberAttribute), true);
                 if (!string.IsNullOrEmpty(dataMemberAttribute.Name))
                     return dataMemberAttribute.Name;
             }
@@ -196,10 +206,10 @@ namespace MLockConfigurator
 
     public static class JSONParser
     {
-        [ThreadStatic] static Stack<List<string>> splitArrayPool;
-        [ThreadStatic] static StringBuilder stringBuilder;
-        [ThreadStatic] static Dictionary<Type, Dictionary<string, FieldInfo>> fieldInfoCache;
-        [ThreadStatic] static Dictionary<Type, Dictionary<string, PropertyInfo>> propertyInfoCache;
+        [ThreadStatic] private static Stack<List<string>> splitArrayPool;
+        [ThreadStatic] private static StringBuilder stringBuilder;
+        [ThreadStatic] private static Dictionary<Type, Dictionary<string, FieldInfo>> fieldInfoCache;
+        [ThreadStatic] private static Dictionary<Type, Dictionary<string, PropertyInfo>> propertyInfoCache;
 
         public static T FromJson<T>(this string json)
         {
@@ -211,14 +221,15 @@ namespace MLockConfigurator
 
             //Remove all whitespace not within strings to make parsing simpler
             stringBuilder.Length = 0;
-            for (int i = 0; i < json.Length; i++)
+            for (var i = 0; i < json.Length; i++)
             {
-                char c = json[i];
+                var c = json[i];
                 if (c == '"')
                 {
                     i = AppendUntilStringEnd(true, i, json);
                     continue;
                 }
+
                 if (char.IsWhiteSpace(c))
                     continue;
 
@@ -229,17 +240,16 @@ namespace MLockConfigurator
             return (T)ParseValue(typeof(T), stringBuilder.ToString());
         }
 
-        static int AppendUntilStringEnd(bool appendEscapeCharacter, int startIdx, string json)
+        private static int AppendUntilStringEnd(bool appendEscapeCharacter, int startIdx, string json)
         {
             stringBuilder.Append(json[startIdx]);
-            for (int i = startIdx + 1; i < json.Length; i++)
-            {
+            for (var i = startIdx + 1; i < json.Length; i++)
                 if (json[i] == '\\')
                 {
                     if (appendEscapeCharacter)
                         stringBuilder.Append(json[i]);
                     stringBuilder.Append(json[i + 1]);
-                    i++;//Skip next character as it is escaped
+                    i++; //Skip next character as it is escaped
                 }
                 else if (json[i] == '"')
                 {
@@ -247,21 +257,23 @@ namespace MLockConfigurator
                     return i;
                 }
                 else
+                {
                     stringBuilder.Append(json[i]);
-            }
+                }
+
             return json.Length - 1;
         }
 
         //Splits { <value>:<value>, <value>:<value> } and [ <value>, <value> ] into a list of <value> strings
-        static List<string> Split(string json)
+        private static List<string> Split(string json)
         {
-            List<string> splitArray = splitArrayPool.Count > 0 ? splitArrayPool.Pop() : new List<string>();
+            var splitArray = splitArrayPool.Count > 0 ? splitArrayPool.Pop() : new List<string>();
             splitArray.Clear();
             if (json.Length == 2)
                 return splitArray;
-            int parseDepth = 0;
+            var parseDepth = 0;
             stringBuilder.Length = 0;
-            for (int i = 1; i < json.Length - 1; i++)
+            for (var i = 1; i < json.Length - 1; i++)
             {
                 switch (json[i])
                 {
@@ -284,6 +296,7 @@ namespace MLockConfigurator
                             stringBuilder.Length = 0;
                             continue;
                         }
+
                         break;
                 }
 
@@ -301,22 +314,23 @@ namespace MLockConfigurator
             {
                 if (json.Length <= 2)
                     return string.Empty;
-                StringBuilder parseStringBuilder = new StringBuilder(json.Length);
-                for (int i = 1; i < json.Length - 1; ++i)
+                var parseStringBuilder = new StringBuilder(json.Length);
+                for (var i = 1; i < json.Length - 1; ++i)
                 {
                     if (json[i] == '\\' && i + 1 < json.Length - 1)
                     {
-                        int j = "\"\\nrtbf/".IndexOf(json[i + 1]);
+                        var j = "\"\\nrtbf/".IndexOf(json[i + 1]);
                         if (j >= 0)
                         {
                             parseStringBuilder.Append("\"\\\n\r\t\b\f/"[j]);
                             ++i;
                             continue;
                         }
+
                         if (json[i + 1] == 'u' && i + 5 < json.Length - 1)
                         {
-                            UInt32 c = 0;
-                            if (UInt32.TryParse(json.Substring(i + 2, 4), System.Globalization.NumberStyles.AllowHexSpecifier, null, out c))
+                            uint c = 0;
+                            if (uint.TryParse(json.Substring(i + 2, 4), NumberStyles.AllowHexSpecifier, null, out c))
                             {
                                 parseStringBuilder.Append((char)c);
                                 i += 5;
@@ -324,31 +338,35 @@ namespace MLockConfigurator
                             }
                         }
                     }
+
                     parseStringBuilder.Append(json[i]);
                 }
+
                 return parseStringBuilder.ToString();
             }
+
             if (type.IsPrimitive)
             {
-                var result = Convert.ChangeType(json, type, System.Globalization.CultureInfo.InvariantCulture);
+                var result = Convert.ChangeType(json, type, CultureInfo.InvariantCulture);
                 return result;
             }
+
             if (type == typeof(decimal))
             {
                 decimal result;
-                decimal.TryParse(json, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out result);
+                decimal.TryParse(json, NumberStyles.Float, CultureInfo.InvariantCulture, out result);
                 return result;
             }
+
             if (type == typeof(DateTime))
             {
                 DateTime result;
-                DateTime.TryParse(json.Replace("\"", ""), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out result);
+                DateTime.TryParse(json.Replace("\"", ""), CultureInfo.InvariantCulture, DateTimeStyles.None,
+                    out result);
                 return result;
             }
-            if (json == "null")
-            {
-                return null;
-            }
+
+            if (json == "null") return null;
             if (type.IsEnum)
             {
                 if (json[0] == '"')
@@ -362,37 +380,40 @@ namespace MLockConfigurator
                     return 0;
                 }
             }
+
             if (type.IsArray)
             {
-                Type arrayType = type.GetElementType();
+                var arrayType = type.GetElementType();
                 if (json[0] != '[' || json[json.Length - 1] != ']')
                     return null;
 
-                List<string> elems = Split(json);
-                Array newArray = Array.CreateInstance(arrayType, elems.Count);
-                for (int i = 0; i < elems.Count; i++)
+                var elems = Split(json);
+                var newArray = Array.CreateInstance(arrayType, elems.Count);
+                for (var i = 0; i < elems.Count; i++)
                     newArray.SetValue(ParseValue(arrayType, elems[i]), i);
                 splitArrayPool.Push(elems);
                 return newArray;
             }
+
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
             {
-                Type listType = type.GetGenericArguments()[0];
+                var listType = type.GetGenericArguments()[0];
                 if (json[0] != '[' || json[json.Length - 1] != ']')
                     return null;
 
-                List<string> elems = Split(json);
-                var list = (IList)type.GetConstructor(new Type[] { typeof(int) }).Invoke(new object[] { elems.Count });
-                for (int i = 0; i < elems.Count; i++)
+                var elems = Split(json);
+                var list = (IList)type.GetConstructor(new[] { typeof(int) }).Invoke(new object[] { elems.Count });
+                for (var i = 0; i < elems.Count; i++)
                     list.Add(ParseValue(listType, elems[i]));
                 splitArrayPool.Push(elems);
                 return list;
             }
+
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
             {
                 Type keyType, valueType;
                 {
-                    Type[] args = type.GetGenericArguments();
+                    var args = type.GetGenericArguments();
                     keyType = args[0];
                     valueType = args[1];
                 }
@@ -404,66 +425,66 @@ namespace MLockConfigurator
                 if (json[0] != '{' || json[json.Length - 1] != '}')
                     return null;
                 //The list is split into key/value pairs only, this means the split must be divisible by 2 to be valid JSON
-                List<string> elems = Split(json);
+                var elems = Split(json);
                 if (elems.Count % 2 != 0)
                     return null;
 
-                var dictionary = (IDictionary)type.GetConstructor(new Type[] { typeof(int) }).Invoke(new object[] { elems.Count / 2 });
-                for (int i = 0; i < elems.Count; i += 2)
+                var dictionary = (IDictionary)type.GetConstructor(new[] { typeof(int) })
+                    .Invoke(new object[] { elems.Count / 2 });
+                for (var i = 0; i < elems.Count; i += 2)
                 {
                     if (elems[i].Length <= 2)
                         continue;
-                    string keyValue = elems[i].Substring(1, elems[i].Length - 2);
-                    object val = ParseValue(valueType, elems[i + 1]);
+                    var keyValue = elems[i].Substring(1, elems[i].Length - 2);
+                    var val = ParseValue(valueType, elems[i + 1]);
                     dictionary[keyValue] = val;
                 }
+
                 return dictionary;
             }
-            if (type == typeof(object))
-            {
-                return ParseAnonymousValue(json);
-            }
-            if (json[0] == '{' && json[json.Length - 1] == '}')
-            {
-                return ParseObject(type, json);
-            }
+
+            if (type == typeof(object)) return ParseAnonymousValue(json);
+            if (json[0] == '{' && json[json.Length - 1] == '}') return ParseObject(type, json);
 
             return null;
         }
 
-        static object ParseAnonymousValue(string json)
+        private static object ParseAnonymousValue(string json)
         {
             if (json.Length == 0)
                 return null;
             if (json[0] == '{' && json[json.Length - 1] == '}')
             {
-                List<string> elems = Split(json);
+                var elems = Split(json);
                 if (elems.Count % 2 != 0)
                     return null;
                 var dict = new Dictionary<string, object>(elems.Count / 2);
-                for (int i = 0; i < elems.Count; i += 2)
+                for (var i = 0; i < elems.Count; i += 2)
                     dict[elems[i].Substring(1, elems[i].Length - 2)] = ParseAnonymousValue(elems[i + 1]);
                 return dict;
             }
+
             if (json[0] == '[' && json[json.Length - 1] == ']')
             {
-                List<string> items = Split(json);
+                var items = Split(json);
                 var finalList = new List<object>(items.Count);
-                for (int i = 0; i < items.Count; i++)
+                for (var i = 0; i < items.Count; i++)
                     finalList.Add(ParseAnonymousValue(items[i]));
                 return finalList;
             }
+
             if (json[0] == '"' && json[json.Length - 1] == '"')
             {
-                string str = json.Substring(1, json.Length - 2);
+                var str = json.Substring(1, json.Length - 2);
                 return str.Replace("\\", string.Empty);
             }
+
             if (char.IsDigit(json[0]) || json[0] == '-')
             {
                 if (json.Contains("."))
                 {
                     double result;
-                    double.TryParse(json, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out result);
+                    double.TryParse(json, NumberStyles.Float, CultureInfo.InvariantCulture, out result);
                     return result;
                 }
                 else
@@ -473,6 +494,7 @@ namespace MLockConfigurator
                     return result;
                 }
             }
+
             if (json == "true")
                 return true;
             if (json == "false")
@@ -481,19 +503,20 @@ namespace MLockConfigurator
             return null;
         }
 
-        static Dictionary<string, T> CreateMemberNameDictionary<T>(T[] members) where T : MemberInfo
+        private static Dictionary<string, T> CreateMemberNameDictionary<T>(T[] members) where T : MemberInfo
         {
-            Dictionary<string, T> nameToMember = new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
-            for (int i = 0; i < members.Length; i++)
+            var nameToMember = new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
+            for (var i = 0; i < members.Length; i++)
             {
-                T member = members[i];
+                var member = members[i];
                 if (member.IsDefined(typeof(IgnoreDataMemberAttribute), true))
                     continue;
 
-                string name = member.Name;
+                var name = member.Name;
                 if (member.IsDefined(typeof(DataMemberAttribute), true))
                 {
-                    DataMemberAttribute dataMemberAttribute = (DataMemberAttribute)Attribute.GetCustomAttribute(member, typeof(DataMemberAttribute), true);
+                    var dataMemberAttribute =
+                        (DataMemberAttribute)Attribute.GetCustomAttribute(member, typeof(DataMemberAttribute), true);
                     if (!string.IsNullOrEmpty(dataMemberAttribute.Name))
                         name = dataMemberAttribute.Name;
                 }
@@ -504,12 +527,12 @@ namespace MLockConfigurator
             return nameToMember;
         }
 
-        static object ParseObject(Type type, string json)
+        private static object ParseObject(Type type, string json)
         {
-            object instance = FormatterServices.GetUninitializedObject(type);
+            var instance = FormatterServices.GetUninitializedObject(type);
 
             //The list is split into key/value pairs only, this means the split must be divisible by 2 to be valid JSON
-            List<string> elems = Split(json);
+            var elems = Split(json);
             if (elems.Count % 2 != 0)
                 return instance;
 
@@ -517,21 +540,24 @@ namespace MLockConfigurator
             Dictionary<string, PropertyInfo> nameToProperty;
             if (!fieldInfoCache.TryGetValue(type, out nameToField))
             {
-                nameToField = CreateMemberNameDictionary(type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy));
+                nameToField = CreateMemberNameDictionary(
+                    type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy));
                 fieldInfoCache.Add(type, nameToField);
             }
+
             if (!propertyInfoCache.TryGetValue(type, out nameToProperty))
             {
-                nameToProperty = CreateMemberNameDictionary(type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy));
+                nameToProperty = CreateMemberNameDictionary(
+                    type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy));
                 propertyInfoCache.Add(type, nameToProperty);
             }
 
-            for (int i = 0; i < elems.Count; i += 2)
+            for (var i = 0; i < elems.Count; i += 2)
             {
                 if (elems[i].Length <= 2)
                     continue;
-                string key = elems[i].Substring(1, elems[i].Length - 2);
-                string value = elems[i + 1];
+                var key = elems[i].Substring(1, elems[i].Length - 2);
+                var value = elems[i + 1];
 
                 FieldInfo fieldInfo;
                 PropertyInfo propertyInfo;

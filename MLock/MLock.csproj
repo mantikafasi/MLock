@@ -78,7 +78,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Events.cs" />
-    <Compile Include="TinyJson.cs" />
     <Compile Include="USB.cs" />
     <Compile Include="Utils.cs" />
     <Page Include="LockWindow.xaml">
@@ -89,7 +88,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Config.cs" />
     <Compile Include="LockWindow.xaml.cs">
       <DependentUpon>LockWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -118,6 +116,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <EmbeddedResource Include="Resources\taskicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{9252a017-8f0b-4113-b0d0-e0f328b86d00}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

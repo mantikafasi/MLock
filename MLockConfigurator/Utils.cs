@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Win32.TaskScheduler;
 
@@ -14,7 +11,9 @@ namespace MLockUSBKeyGenerator
     internal class Utils
     {
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-        private static extern bool GetVolumeInformation(string letter, StringBuilder name, uint nameSize, out uint serialNumber, out uint serialNumberLength, out uint flags, StringBuilder systemName, uint systemNameSize);
+        private static extern bool GetVolumeInformation(string letter, StringBuilder name, uint nameSize,
+            out uint serialNumber, out uint serialNumberLength, out uint flags, StringBuilder systemName,
+            uint systemNameSize);
 
         public static uint GetSerialNumberOfDrive(string volume)
         {
@@ -24,21 +23,13 @@ namespace MLockUSBKeyGenerator
             var serialNumberLength = 0u;
             var flags = 0u;
 
-            volume = (volume ?? String.Empty).Trim();
+            volume = (volume ?? string.Empty).Trim();
 
-            if (volume.Length == 1)
-            {
-                volume = $"{volume}:\\";
-            }
-            if (!volume.EndsWith(@"\"))
-            {
-                volume = $"{volume}\\";
-            }
+            if (volume.Length == 1) volume = $"{volume}:\\";
+            if (!volume.EndsWith(@"\")) volume = $"{volume}\\";
 
-            if (GetVolumeInformation(volume, name, 256, out serialNumber, out serialNumberLength, out flags, systemName, 256))
-            {
-                return serialNumber;
-            }
+            if (GetVolumeInformation(volume, name, 256, out serialNumber, out serialNumberLength, out flags, systemName,
+                    256)) return serialNumber;
 
             return 0u;
         }
@@ -50,7 +41,6 @@ namespace MLockUSBKeyGenerator
 
         public static void InstallTask()
         {
-
             var isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
 
             if (!isAdmin)
@@ -60,7 +50,7 @@ namespace MLockUSBKeyGenerator
                 return;
             }
 
-            TaskDefinition td = TaskService.Instance.NewTask();
+            var td = TaskService.Instance.NewTask();
             td.RegistrationInfo.Description = "Starts MLock";
             td.Principal.RunLevel = TaskRunLevel.Highest;
             td.Triggers.Add(new LogonTrigger());
@@ -80,10 +70,9 @@ namespace MLockUSBKeyGenerator
                 // Instead of this I can make it start a CMD process as admin and copy file but better do in code i think
                 return;
             }
-            
+
             TaskService.Instance.RootFolder.DeleteTask("MLockTask");
             MessageBox.Show("Task Uninstalled Successfully, MLock will not start on logon now.");
-        }   
-
+        }
     }
 }

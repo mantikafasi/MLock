@@ -75,9 +75,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Config.cs" />
-    <Compile Include="RSAUtils.cs" />
-    <Compile Include="TinyJson.cs" />
     <Compile Include="Utils.cs" />
     <Page Include="ConfiguratorWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -109,6 +106,12 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{9252a017-8f0b-4113-b0d0-e0f328b86d00}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

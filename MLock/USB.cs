@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Management;
+using Common;
 
 namespace MLock
 {
@@ -57,7 +58,6 @@ namespace MLock
                 }
 
                 CheckUSBs();
-
 
                 Console.WriteLine(property.Name + " = " + property.Value);
             }

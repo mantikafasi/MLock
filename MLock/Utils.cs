@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Drawing;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows.Forms;
 
 namespace MLock
 {
@@ -30,6 +32,17 @@ namespace MLock
 
                 return rsa.VerifyData(messageBytes, new SHA256CryptoServiceProvider(), signatureBytes);
             }
+        }
+
+        public static Bitmap Screenshot()
+        {
+            var captureRectangle = Screen.PrimaryScreen.Bounds;
+
+            var captureBitmap = new Bitmap(captureRectangle.Width, captureRectangle.Height);
+            var captureGraphics = Graphics.FromImage(captureBitmap);
+            captureGraphics.CopyFromScreen(captureRectangle.Left, captureRectangle.Top, 0, 0, captureRectangle.Size);
+
+            return captureBitmap;
         }
     }
 }

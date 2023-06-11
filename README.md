@@ -1,7 +1,6 @@
 # MLock 
 Very simple lock screen app for windows which support USB key and password.
 
-https://github.com/mantikafasi/MLock/assets/67705577/99b12ef2-5bfa-49c4-bdae-295e3f98f0a3
 
 # Features
 - [x] Unlockable with USB key (SD card etc works too)
@@ -10,6 +9,7 @@ https://github.com/mantikafasi/MLock/assets/67705577/99b12ef2-5bfa-49c4-bdae-295
 - [x] Disables keyboard, mouse completely
 
 
+https://github.com/mantikafasi/MLock/assets/67705577/7440eb07-5159-47ea-a202-5246220f443b
 
 
 ## How to use

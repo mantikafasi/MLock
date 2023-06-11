@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using Common;
 
 namespace MLock
 {
@@ -58,8 +59,7 @@ namespace MLock
                     return false;
                 }
 
-                Config.INSTANCE.publicKey = File.ReadAllText(App.MLOCK_DIR + "\\publicKey.xml");
-
+                Config.INSTANCE.publicKey = File.ReadAllText(MLOCK_DIR + "\\publicKey.xml");
             }
 
             if (Config.INSTANCE.EnablePasswordUnlocking &&

@@ -12,18 +12,19 @@
         WindowState="Maximized"
         Title="MLock">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
+        <Canvas Name="BackgroundGrid" />
 
-        </Grid.RowDefinitions>
-        <TextBlock FontSize="100" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center"
-                   Grid.Row="0">
-            MLOCK
-        </TextBlock>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
 
-        <TextBlock FontSize="50" Name="PasswordBlock" TextAlignment="Center" HorizontalAlignment="Center" Grid.Row="1"
-                   VerticalAlignment="Center" Text="Enter Password" />
+            </Grid.RowDefinitions>
 
+            <TextBlock Name="PasswordBlock" FontSize="40" TextAlignment="Center" HorizontalAlignment="Center"
+                       Grid.Row="1"
+                       VerticalAlignment="Center" Foreground="LightGray" Text="Enter Password" />
+
+        </Grid>
     </Grid>
+
 </Window>
