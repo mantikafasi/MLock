@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Security.AccessControl;
 using System.Windows;
 using Common;
 using Microsoft.Win32;
@@ -106,6 +107,14 @@ namespace MLockUSBKeyGenerator
 
                 if (config.EnableUSBUnlocking && config.privateKey != null)
                     File.WriteAllText(MLOCK_DIR + "\\publicKey.xml", RSAUtils.GetPublicKey(config.privateKey));
+
+                // Make Config file only readable by admins
+                FileSecurity fileSecurity = File.GetAccessControl(MLOCK_DIR);
+                fileSecurity.SetAccessRuleProtection(true, false);
+                FileSystemAccessRule rule = new FileSystemAccessRule("Administrators", FileSystemRights.FullControl, AccessControlType.Allow);
+                fileSecurity.AddAccessRule(rule);
+                File.SetAccessControl(MLOCK_DIR, fileSecurity);
+
                 MessageBox.Show("Config installed successfully");
             }
         }
@@ -142,7 +151,13 @@ namespace MLockUSBKeyGenerator
                 return false;
             }
 
-            if (!config.EnablePasswordUnlocking && !config.EnableUSBUnlocking)
+            if (Config.INSTANCE.EnableWebServer && Config.INSTANCE.WebServerPassword.Trim() == "")
+            {
+                MessageBox.Show("WebServer password not set");
+                return false;
+            }
+
+            if (!config.EnablePasswordUnlocking && !config.EnableUSBUnlocking && !config.EnableWebServer)
             {
                 MessageBox.Show("No unlocking methods enabled, select one first");
                 return false;

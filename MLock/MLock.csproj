@@ -78,7 +78,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Events.cs" />
-    <Compile Include="USB.cs" />
+    <Compile Include="Modules\USB.cs" />
+    <Compile Include="Modules\WebServer.cs" />
     <Compile Include="Utils.cs" />
     <Page Include="LockWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -123,5 +124,6 @@
       <Name>Common</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

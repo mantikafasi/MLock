@@ -23,10 +23,14 @@ https://github.com/mantikafasi/MLock/assets/67705577/7440eb07-5159-47ea-a202-524
 
 Incase you get locked out, from different account with admin permissions you can delete config.json inside C:/Users/YourUser/AppData/Roaming/MLock
 
+## Notes
+- Currently passwords are stored as plaintext in config.json, so any user with admin permissions can see your password.
+- WebServer doesnt use https, so if someone is sniffing your network they can see your password.
+
 ## TODO
-- [ ] Add more unlock methods (Like from mobile app)
-- [ ] Design a better UI (current one is terrible)
-- [ ] Add option to configurator to run program at startup
+- [x] Add more unlock methods (Like from mobile app)
+- [x] Design a better UI (current one is terrible)
+- [x] Add option to configurator to run program at startup
 - [ ] Add github actions to create releases automatically
 - [ ] Maybe add option to remove sound when locked
 - [ ] Log Failures to file

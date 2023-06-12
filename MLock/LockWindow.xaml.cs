@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -8,6 +9,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using Common;
+using MLock.Modules;
 
 namespace MLock
 {
@@ -43,11 +45,10 @@ namespace MLock
 
                 Events.LockApp += () =>
                 {
-                    var screenshot = Utils.Screenshot();
-
-
                     Dispatcher.Invoke(() =>
                     {
+                        var screenshot = Utils.Screenshot();
+
                         var bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(
                             screenshot.GetHbitmap(),
                             IntPtr.Zero,
@@ -62,17 +63,19 @@ namespace MLock
                 Events.UnlockApp += () => { SetBlur(true); };
             }
 
-
             Native.SetKHookConfig(config);
 
-            if (Config.INSTANCE.StartLocked) Events.Lock();
+            if (Config.INSTANCE.StartLocked && !Config.INSTANCE.EnableUSBUnlocking) // CheckUSBs method automaticly locks if no USBs are found
+                Events.Lock();
 
             if (Config.INSTANCE.EnableUSBUnlocking)
             {
                 USB.Initialize();
-
                 USB.CheckUSBs();
             }
+
+            if (Config.INSTANCE.EnableWebServer)
+                Task.Run(() => new WebServer().Initialize());
         }
 
         private void SetPasswordText(string text)
@@ -132,7 +135,8 @@ namespace MLock
                     return;
                 }
 
-                Native.InstallKHook();
+                if (!Config.INSTANCE.Debug)
+                    Native.InstallKHook();
                 Visibility = Visibility.Visible;
             });
         }

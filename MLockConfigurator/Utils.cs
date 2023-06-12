@@ -39,17 +39,13 @@ namespace MLockUSBKeyGenerator
             return TaskService.Instance.RootFolder.Tasks.Any(task => task.Name == "MLockTask");
         }
 
+        public static bool IsAdmin()
+        {
+            return new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
         public static void InstallTask()
         {
-            var isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
-
-            if (!isAdmin)
-            {
-                MessageBox.Show("To Install task, please run Configurator as admin");
-                // Instead of this I can make it start a CMD process as admin and copy file but better do in code i think
-                return;
-            }
-
             var td = TaskService.Instance.NewTask();
             td.RegistrationInfo.Description = "Starts MLock";
             td.Principal.RunLevel = TaskRunLevel.Highest;

@@ -18,5 +18,8 @@ namespace Common
 
         [DataMember(Name = "startLocked")] public bool StartLocked { get; set; }
         [DataMember(Name = "enableBlur")] public bool BlurBackground { get; set; }
+        [DataMember(Name="enableWebServer")] public bool EnableWebServer { get; set;}
+        [DataMember (Name="webServerPassword")] public string WebServerPassword { get; set; } 
+        [DataMember (Name="debug")] public bool Debug { get; set; } // this is only used to disable keyhook for testing
     }
 }

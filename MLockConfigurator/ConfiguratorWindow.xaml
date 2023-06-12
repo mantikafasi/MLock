@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MLock Config Generator" Height="400" Width="525">
+        Title="MLock Config Generator" Height="500" Width="525">
     <StackPanel>
         <CheckBox x:Name="StartLockedCheckBox" Content="Start Locked" Margin="10"
                   IsChecked="{Binding StartLocked, Mode=TwoWay}" />
@@ -19,6 +19,19 @@
                       IsChecked="{Binding EnablePasswordUnlocking, Mode=TwoWay}" />
             <TextBox x:Name="PasswordTextBox" Margin="10" Grid.Row="9" Grid.Column="1" Width="Auto"
                      Text="{Binding Password}"
+                     IsEnabled="{Binding EnablePasswordUnlocking}" />
+        </Grid>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <CheckBox x:Name="WebServerCheckBox" Content="Enable WebServer" Margin="10" Grid.Column="0"
+                      IsChecked="{Binding EnableWebServer, Mode=TwoWay}" />
+            <TextBox x:Name="WebServerTextBox" Margin="10" Grid.Row="9" Grid.Column="1" Width="Auto"
+                     Text="{Binding WebServerPassword}"
                      IsEnabled="{Binding EnablePasswordUnlocking}" />
         </Grid>
 

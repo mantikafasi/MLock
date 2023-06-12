@@ -2,8 +2,11 @@
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Security.Principal;
+using System.Windows;
 using System.Windows.Forms;
 using Common;
+using MessageBox = System.Windows.MessageBox;
 
 namespace MLock
 {
@@ -14,6 +17,14 @@ namespace MLock
 
         public App()
         {
+            var isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+            if (!isAdmin)
+            {
+                MessageBox.Show("Please run MLock as administrator", "Admin Privileges Required", MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                Environment.Exit(0);
+            }
+
             if (!ParseConfig()) Environment.Exit(0);
 
             InitializeComponent();
@@ -54,7 +65,7 @@ namespace MLock
             {
                 if (!File.Exists(MLOCK_DIR + "\\publicKey.xml"))
                 {
-                    System.Windows.MessageBox.Show(
+                    MessageBox.Show(
                         "Public Key for USB Locking not found, please run the USB key generator and config installer first");
                     return false;
                 }
@@ -65,11 +76,12 @@ namespace MLock
             if (Config.INSTANCE.EnablePasswordUnlocking &&
                 (Config.INSTANCE.Password == null || Config.INSTANCE.Password.Trim() == ""))
             {
-                System.Windows.MessageBox.Show("Password not set, please run the config installer first");
+                MessageBox.Show("Password not set, please run the config installer first");
                 return false;
             }
 
-            if (!Config.INSTANCE.EnablePasswordUnlocking && !Config.INSTANCE.EnableUSBUnlocking)
+            if (!Config.INSTANCE.EnablePasswordUnlocking && !Config.INSTANCE.EnableUSBUnlocking &&
+                !Config.INSTANCE.EnableWebServer)
             {
                 MessageBox.Show("No unlocking methods enabled, please run the config installer first");
                 return false;

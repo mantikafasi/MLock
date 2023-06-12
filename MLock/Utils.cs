@@ -39,8 +39,10 @@ namespace MLock
             var captureRectangle = Screen.PrimaryScreen.Bounds;
 
             var captureBitmap = new Bitmap(captureRectangle.Width, captureRectangle.Height);
-            var captureGraphics = Graphics.FromImage(captureBitmap);
-            captureGraphics.CopyFromScreen(captureRectangle.Left, captureRectangle.Top, 0, 0, captureRectangle.Size);
+            using (var graphics = Graphics.FromImage(captureBitmap))
+            {
+                graphics.CopyFromScreen(captureRectangle.Left, captureRectangle.Top, 0, 0, captureRectangle.Size);
+            }
 
             return captureBitmap;
         }
