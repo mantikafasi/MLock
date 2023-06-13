@@ -1,0 +1,33 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Widget.MLock.AppWidget.Container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:theme="@style/Theme.MLock.AppWidgetContainer">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttonLock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="4dp"
+            android:onClick="onLockComputerButtonClicked"
+            android:text="Lock">
+
+        </Button>
+
+        <Button
+            android:id="@+id/buttonUnlock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:onClick="onUnlockComputerButtonClicked"
+            android:text="Unlock"
+            android:textAlignment="center"></Button>
+    </LinearLayout>
+</LinearLayout>

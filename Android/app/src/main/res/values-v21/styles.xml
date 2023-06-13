@@ -1,0 +1,12 @@
+<resources>
+
+    <style name="Widget.MLock.AppWidget.Container" parent="android:Widget">
+        <item name="android:id">@android:id/background</item>
+        <item name="android:padding">?attr/appWidgetPadding</item>
+    </style>
+
+    <style name="Widget.MLock.AppWidget.InnerView" parent="android:Widget">
+        <item name="android:padding">?attr/appWidgetPadding</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+</resources>
