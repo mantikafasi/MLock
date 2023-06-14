@@ -52,7 +52,9 @@ namespace MLock.Modules
             context.Response.Close();
         }
 
-        private void StopServer(object sender, RoutedEventArgs e) // I am guessing server gets closed automatically when the program closes
+        private void
+            StopServer(object sender,
+                RoutedEventArgs e) // I am guessing server gets closed automatically when the program closes
         {
             cts?.Cancel();
         }

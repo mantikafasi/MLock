@@ -1,10 +1,14 @@
 import os
 import zipfile
 
+blacklistedFiles = ["Microsoft.Win32.TaskScheduler.resources.dll"]
+blacklistedExtensions = ["config","pdb","xml"]
+
 def add_files_to_zip(zip_file, source_dir, added_files):
     for root, _, files in os.walk(source_dir):
         for file in files:
-            if file == "Microsoft.Win32.TaskScheduler.resources.dll": continue # stupit tasks library loves creating these
+            if file in blacklistedFiles: continue # stupit tasks library loves creating these
+            if file.split(".")[-1] in blacklistedExtensions: continue
             file_path = os.path.join(root, file)
             if file not in added_files:
                 zip_file.write(file_path, os.path.relpath(file_path, source_dir))

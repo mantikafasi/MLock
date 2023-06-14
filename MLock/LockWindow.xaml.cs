@@ -65,7 +65,8 @@ namespace MLock
 
             Native.SetKHookConfig(config);
 
-            if (Config.INSTANCE.StartLocked && !Config.INSTANCE.EnableUSBUnlocking) // CheckUSBs method automaticly locks if no USBs are found
+            if (Config.INSTANCE.StartLocked &&
+                !Config.INSTANCE.EnableUSBUnlocking) // CheckUSBs method automaticly locks if no USBs are found
                 Events.Lock();
 
             if (Config.INSTANCE.EnableUSBUnlocking)

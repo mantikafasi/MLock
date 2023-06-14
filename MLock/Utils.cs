@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Security.Cryptography;
+﻿using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
@@ -19,19 +17,6 @@ namespace MLock
             if (Native.GetVolumeInformation(volume, name, 256, out serialNumber, 0u, 0u, systemName, 256))
                 return serialNumber;
             return 0u;
-        }
-
-        public static bool VerifySignature(string message, string signature, string publicKey)
-        {
-            var messageBytes = Encoding.UTF8.GetBytes(message);
-            var signatureBytes = Convert.FromBase64String(signature);
-
-            using (var rsa = new RSACryptoServiceProvider())
-            {
-                rsa.FromXmlString(publicKey);
-
-                return rsa.VerifyData(messageBytes, new SHA256CryptoServiceProvider(), signatureBytes);
-            }
         }
 
         public static Bitmap Screenshot()

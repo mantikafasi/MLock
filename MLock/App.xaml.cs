@@ -45,6 +45,19 @@ namespace MLock
 
             notifyIcon.ContextMenuStrip = new ContextMenuStrip();
             notifyIcon.ContextMenuStrip.Items.Add("Lock", null, (s, e) => { Events.Lock(); });
+
+            if (Config.INSTANCE.EnablePasswordUnlocking)
+                notifyIcon.ContextMenuStrip.Items.Add("Quit", null, (s, e) =>
+                {
+                    var inputDialog = new InputDialog("Enter Your Password:");
+                    if (inputDialog.ShowDialog() == true)
+                    {
+                        if (inputDialog.Answer == Config.INSTANCE.Password)
+                            Environment.Exit(0);
+                        else
+                            MessageBox.Show("Incorrect Password");
+                    }
+                });
         }
 
         public bool ParseConfig()

@@ -58,15 +58,6 @@ namespace MLockUSBKeyGenerator
 
         public static void UninstallTask()
         {
-            var isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
-
-            if (!isAdmin)
-            {
-                MessageBox.Show("To uninstall task, please run Configurator as admin.");
-                // Instead of this I can make it start a CMD process as admin and copy file but better do in code i think
-                return;
-            }
-
             TaskService.Instance.RootFolder.DeleteTask("MLockTask");
             MessageBox.Show("Task Uninstalled Successfully, MLock will not start on logon now.");
         }

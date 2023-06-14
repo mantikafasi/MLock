@@ -8,21 +8,6 @@ namespace Common
 {
     public class RSAUtils
     {
-        public static string Encrypt(string text, string key)
-        {
-            var messageBytes = Encoding.UTF8.GetBytes(text);
-
-            using (var rsa = new RSACryptoServiceProvider())
-            {
-                rsa.FromXmlString(key);
-
-                // Encrypt the message using RSA
-                var encryptedMessage = rsa.Encrypt(messageBytes, true);
-
-                return encryptedMessage.ToString();
-            }
-        }
-
         public static string SignMessage(string message, string privateKey)
         {
             var messageBytes = Encoding.UTF8.GetBytes(message);
@@ -65,13 +50,6 @@ namespace Common
                 var publicKey = rsa.ExportParameters(false);
                 return SerilizeToString(publicKey);
             }
-        }
-
-
-        public RSAParameters SerilizeToParameters(string key)
-        {
-            return (RSAParameters)new XmlSerializer(typeof(RSAParameters))
-                .Deserialize(new StringReader(key));
         }
 
         public static string SerilizeToString(RSAParameters key)

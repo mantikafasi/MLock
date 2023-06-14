@@ -23,7 +23,7 @@ namespace MLock
                 var key = File.ReadAllText(driveName + "/MLockUSBKey");
 
                 var number = Utils.GetSerialNumberOfDrive(driveName);
-                if (Utils.VerifySignature(number.ToString(), key, Config.INSTANCE.publicKey)) return true;
+                if (RSAUtils.VerifySignature(number.ToString(), key, Config.INSTANCE.publicKey)) return true;
             }
 
             return false;
